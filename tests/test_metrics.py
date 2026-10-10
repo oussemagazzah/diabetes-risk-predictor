@@ -1,6 +1,11 @@
 import numpy as np
 
-from diabetes_predictor.metrics import bootstrap_ci, compute_metrics, select_threshold
+from diabetes_predictor.metrics import (
+    bootstrap_ci,
+    compute_metrics,
+    select_accuracy_threshold,
+    select_threshold,
+)
 
 
 def test_select_threshold_meets_recall_target_with_highest_threshold():
@@ -9,6 +14,15 @@ def test_select_threshold_meets_recall_target_with_highest_threshold():
     t = select_threshold(y, proba, target_recall=0.8)
     assert compute_metrics(y, proba, t)["recall"] >= 0.8
     assert t == 0.5  # 4/5 positives caught; any higher threshold drops recall to 0.6
+
+
+def test_select_accuracy_threshold_maximises_accuracy():
+    y = np.array([0, 0, 0, 1, 0, 1, 1])
+    proba = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7])
+    t = select_accuracy_threshold(y, proba)
+    best = max(compute_metrics(y, proba, c)["accuracy"] for c in proba)
+    assert compute_metrics(y, proba, t)["accuracy"] == best
+    assert t == 0.4  # ties with 0.6 (6/7 correct); the lower threshold keeps more recall
 
 
 def test_compute_metrics_confusion_matrix_consistent():

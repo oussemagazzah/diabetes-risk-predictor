@@ -35,6 +35,10 @@ def main() -> None:
     at_threshold = compute_metrics(y_test, proba, threshold)
     at_half = compute_metrics(y_test, proba, 0.5)
     ci = bootstrap_ci(y_test, proba, threshold, config.N_BOOTSTRAP, config.SEED)
+    # Secondary operating point, also fixed on CV in train.py; reported for comparison only.
+    acc_threshold = bundle["accuracy_threshold"]
+    at_acc = compute_metrics(y_test, proba, acc_threshold)
+    ci_acc = bootstrap_ci(y_test, proba, acc_threshold, config.N_BOOTSTRAP, config.SEED)
 
     figs = config.FIGURES_DIR
     name = bundle["model_name"].replace("_", " ")
@@ -64,6 +68,8 @@ def main() -> None:
             "at_threshold": at_threshold,
             "at_0.5": at_half,
             "bootstrap_95ci_at_threshold": ci,
+            "at_accuracy_threshold": at_acc,
+            "bootstrap_95ci_at_accuracy_threshold": ci_acc,
         },
     }
     config.METRICS_PATH.write_text(json.dumps(metrics, indent=2))
@@ -71,14 +77,18 @@ def main() -> None:
     print(f"Model: {bundle['model_name']} (calibrated={bundle['calibrated']})")
     print(f"Test set: {len(y_test)} patients, {y_test.mean():.1%} diabetic\n")
     print(
-        f"{'metric':<12}{'@ ' + format(threshold, '.3f'):>10}{'@ 0.5':>10}   95% CI (@ threshold)"
+        f"{'metric':<12}{f'@ {threshold:.3f}':>10}{f'@ {acc_threshold:.3f}':>10}"
+        f"{'@ 0.5':>10}   95% CI (@ screening threshold)"
     )
-    for key in ["roc_auc", "pr_auc", "recall", "precision", "f1", "accuracy"]:
-        lo, hi = ci[key]
-        print(f"{key:<12}{at_threshold[key]:>10.3f}{at_half[key]:>10.3f}   [{lo:.3f}, {hi:.3f}]")
-    print(f"{'specificity':<12}{at_threshold['specificity']:>10.3f}{at_half['specificity']:>10.3f}")
+    for key in ["roc_auc", "pr_auc", "recall", "precision", "f1", "accuracy", "specificity"]:
+        interval = f"   [{ci[key][0]:.3f}, {ci[key][1]:.3f}]" if key in ci else ""
+        print(
+            f"{key:<12}{at_threshold[key]:>10.3f}{at_acc[key]:>10.3f}{at_half[key]:>10.3f}"
+            + interval
+        )
     print(f"{'brier':<12}{at_threshold['brier']:>10.3f}")
-    print(f"\nConfusion matrix @ threshold: {at_threshold['confusion_matrix']}")
+    print(f"\nConfusion matrix @ screening threshold: {at_threshold['confusion_matrix']}")
+    print(f"Confusion matrix @ max-accuracy threshold: {at_acc['confusion_matrix']}")
     print(f"Saved -> {config.METRICS_PATH.relative_to(config.ROOT_DIR)} and {figs.name}/*.png")
 
 

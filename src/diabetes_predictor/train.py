@@ -5,7 +5,8 @@ Steps (the test split is never loaded into any estimator here):
   2. 5-fold stratified CV comparison of four models with default hyperparameters.
   3. RandomizedSearchCV (ROC-AUC) on the top models, also searching median vs KNN imputation.
   4. Out-of-fold predictions -> decide whether sigmoid calibration improves the Brier score.
-  5. Out-of-fold predictions -> pick the decision threshold that reaches recall >= 0.80.
+  5. Out-of-fold predictions -> pick the decision threshold that reaches recall >= 0.80
+     (plus a max-accuracy threshold, reported for comparison only).
   6. Refit the chosen pipeline on the full train split and save it with its threshold.
 
 Run with:  python -m diabetes_predictor.train
@@ -30,7 +31,11 @@ from sklearn.model_selection import (
 
 from diabetes_predictor import config
 from diabetes_predictor.data import load_data, train_test_split_data
-from diabetes_predictor.metrics import compute_metrics, select_threshold
+from diabetes_predictor.metrics import (
+    compute_metrics,
+    select_accuracy_threshold,
+    select_threshold,
+)
 from diabetes_predictor.pipeline import MODELS, build_pipeline, make_imputer
 from diabetes_predictor.plots import plot_calibration, plot_threshold_tradeoff
 
@@ -191,12 +196,21 @@ def main() -> None:
         f"precision {at_threshold['precision']:.3f} "
         f"(at 0.5: recall {at_half['recall']:.3f}, precision {at_half['precision']:.3f})"
     )
+    # Secondary, reported-only operating point: maximum accuracy (also chosen out-of-fold).
+    accuracy_threshold = select_accuracy_threshold(y_train, proba)
+    at_accuracy = compute_metrics(y_train, proba, accuracy_threshold)
+    print(
+        f"  max-accuracy threshold {accuracy_threshold:.3f}: accuracy {at_accuracy['accuracy']:.3f}"
+        f", recall {at_accuracy['recall']:.3f} (screening threshold: accuracy "
+        f"{at_threshold['accuracy']:.3f})"
+    )
     plot_threshold_tradeoff(
         y_train,
         proba,
         threshold,
         config.TARGET_RECALL,
         config.FIGURES_DIR / "threshold_tradeoff_cv.png",
+        accuracy_threshold=accuracy_threshold,
     )
 
     final_estimator.fit(X_train, y_train)
@@ -205,6 +219,7 @@ def main() -> None:
         {
             "model": final_estimator,
             "threshold": threshold,
+            "accuracy_threshold": accuracy_threshold,
             "model_name": selected,
             "calibrated": use_calibration,
             "features": config.FEATURES,
@@ -238,6 +253,10 @@ def main() -> None:
             "value": threshold,
             "oof_metrics_at_threshold": at_threshold,
             "oof_metrics_at_0.5": at_half,
+        },
+        "accuracy_threshold": {
+            "value": accuracy_threshold,
+            "oof_metrics": at_accuracy,
         },
     }
     config.REPORTS_DIR.mkdir(parents=True, exist_ok=True)

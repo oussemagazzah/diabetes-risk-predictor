@@ -44,6 +44,14 @@ def select_threshold(y_true: np.ndarray, proba: np.ndarray, target_recall: float
     return float(thresholds[ok].max()) if ok.any() else float(thresholds.min())
 
 
+def select_accuracy_threshold(y_true: np.ndarray, proba: np.ndarray) -> float:
+    """Threshold that maximises accuracy; on ties, the lowest one (it keeps more recall)."""
+    y_true, proba = np.asarray(y_true), np.asarray(proba)
+    candidates = np.unique(proba)
+    accuracy = [((proba >= t).astype(int) == y_true).mean() for t in candidates]
+    return float(candidates[int(np.argmax(accuracy))])
+
+
 def bootstrap_ci(
     y_true: np.ndarray,
     proba: np.ndarray,

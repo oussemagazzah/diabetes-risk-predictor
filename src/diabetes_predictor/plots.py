@@ -71,17 +71,34 @@ def plot_calibration(y_true, probas: dict[str, np.ndarray], path: Path, title: s
     _save(fig, path)
 
 
-def plot_threshold_tradeoff(y_true, proba, threshold: float, target: float, path: Path) -> None:
+def plot_threshold_tradeoff(
+    y_true,
+    proba,
+    threshold: float,
+    target: float,
+    path: Path,
+    accuracy_threshold: float | None = None,
+) -> None:
     precision, recall, thresholds = precision_recall_curve(y_true, proba)
-    fig, ax = plt.subplots(figsize=(6, 4))
+    y_true, proba = np.asarray(y_true), np.asarray(proba)
+    accuracy = [((proba >= t).astype(int) == y_true).mean() for t in thresholds]
+    fig, ax = plt.subplots(figsize=(8.5, 4))
     ax.plot(thresholds, recall[:-1], label="Recall")
     ax.plot(thresholds, precision[:-1], label="Precision")
+    ax.plot(thresholds, accuracy, label="Accuracy", color="black", alpha=0.7)
     ax.axhline(target, ls=":", color="grey", label=f"Recall target {target:.2f}")
-    ax.axvline(threshold, ls="--", color="red", label=f"Chosen threshold {threshold:.2f}")
+    ax.axvline(threshold, ls="--", color="red", label=f"Screening threshold {threshold:.2f}")
+    if accuracy_threshold is not None:
+        ax.axvline(
+            accuracy_threshold,
+            ls="--",
+            color="purple",
+            label=f"Max-accuracy threshold {accuracy_threshold:.2f}",
+        )
     ax.set(
         xlabel="Decision threshold",
         ylabel="Score",
         title="Threshold trade-off (out-of-fold CV, train set)",
     )
-    ax.legend(loc="lower left")
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
     _save(fig, path)

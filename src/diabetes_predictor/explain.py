@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import shap  # noqa: E402
 from sklearn.calibration import CalibratedClassifierCV  # noqa: E402
@@ -73,6 +74,7 @@ def main() -> None:
 
     # Global view: what the model learned, computed on the training patients.
     exp_train = explain(pipeline, X_train, X_train)
+    np.random.seed(config.SEED)  # beeswarm jitters dots with the global RNG; keep figures stable
     shap.plots.beeswarm(exp_train, show=False, max_display=len(config.FEATURES))
     fig = plt.gcf()
     fig.suptitle("SHAP summary (train set, log-odds contribution)", fontsize=10)
