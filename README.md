@@ -234,7 +234,7 @@ Omitted lab values (insulin here) are treated as "not measured" and imputed.
 ## 6. Project structure
 
 ```
-IA-Diabetes-Predictor/
+diabetes-risk-predictor/
 ├── data/diabetes.csv              # Pima Indians Diabetes dataset (768 × 9)
 ├── src/diabetes_predictor/
 │   ├── config.py                  # paths, SEED, feature lists, experiment settings
