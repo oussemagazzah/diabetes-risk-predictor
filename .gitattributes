@@ -3,3 +3,6 @@
 # Make and shell scripts must keep LF line endings, even on Windows checkouts
 Makefile text eol=lf
 *.sh text eol=lf
+
+# Count the EDA notebook as documentation so the language bar shows Python
+*.ipynb linguist-documentation
