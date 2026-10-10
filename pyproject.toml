@@ -2,7 +2,7 @@
 name = "diabetes-predictor"
 version = "1.0.0"
 description = "Leakage-free, recall-oriented diabetes risk model on the Pima Indians Diabetes dataset."
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -13,7 +13,7 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]

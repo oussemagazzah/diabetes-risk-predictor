@@ -1,4 +1,4 @@
-# Pinned for reproducibility (tested with Python 3.13).
+# Pinned for reproducibility. Requires Python >= 3.12 (numpy/scipy/shap pins); developed on 3.13.
 # Runtime
 numpy==2.5.3
 pandas==3.0.6
