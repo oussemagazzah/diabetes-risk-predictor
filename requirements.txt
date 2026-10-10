@@ -1,0 +1,17 @@
+# Pinned for reproducibility (tested with Python 3.13).
+# Runtime
+numpy==2.5.3
+pandas==3.0.6
+scipy==1.18.1
+scikit-learn==1.9.1
+joblib==1.6.0
+matplotlib==3.11.2
+seaborn==0.13.2
+shap==0.53.0
+streamlit==1.65.0
+# Dev / notebooks
+pytest==9.1.1
+ruff==0.17.0
+nbformat==5.11.1
+nbconvert==7.17.1
+ipykernel==7.4.0
