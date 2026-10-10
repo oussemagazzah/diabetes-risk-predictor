@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# Make and shell scripts must keep LF line endings, even on Windows checkouts
+Makefile text eol=lf
+*.sh text eol=lf
