@@ -1,6 +1,6 @@
 # Diabetes Risk Predictor
 
-[![CI](https://github.com/oussemagazzah/IA-Diabetes-Predictor/actions/workflows/ci.yml/badge.svg)](https://github.com/oussemagazzah/IA-Diabetes-Predictor/actions/workflows/ci.yml)
+[![CI](https://github.com/oussemagazzah/diabetes-risk-predictor/actions/workflows/ci.yml/badge.svg)](https://github.com/oussemagazzah/diabetes-risk-predictor/actions/workflows/ci.yml)
 
 A leakage-free, recall-oriented screening model for type 2 diabetes on the Pima Indians Diabetes
 dataset, with calibrated probabilities, SHAP explanations and a small Streamlit demo.
