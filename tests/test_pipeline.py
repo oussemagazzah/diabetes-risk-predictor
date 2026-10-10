@@ -46,3 +46,19 @@ def test_imputer_statistics_come_from_training_data_only(tiny_sample):
 def test_unknown_model_raises():
     with pytest.raises(ValueError):
         build_pipeline("svm")
+
+
+def test_predict_patient_uses_bundle_threshold(tiny_sample):
+    from diabetes_predictor.predict import predict_patient
+
+    X, y = tiny_sample
+    bundle = {
+        "model": build_pipeline("logistic_regression").fit(X, y),
+        "threshold": 0.3,
+        "model_name": "logistic_regression",
+    }
+    result = predict_patient(X.iloc[0].to_dict(), bundle)
+    assert 0 <= result["probability"] <= 1
+    assert result["high_risk"] == (result["probability"] >= 0.3)
+    with pytest.raises(ValueError):
+        predict_patient({"Glucose": 120}, bundle)
