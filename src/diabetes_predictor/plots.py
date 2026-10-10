@@ -38,7 +38,7 @@ def plot_pr(y_true, proba, ap: float, threshold: float, path: Path, title: str) 
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot(recall, precision, lw=2, label=f"Model (AP = {ap:.3f})")
     ax.axhline(np.mean(y_true), ls="--", color="grey", label="Prevalence (no skill)")
-    i = np.argmin(np.abs(thresholds - threshold))
+    i = np.searchsorted(thresholds, threshold)  # first point with score >= threshold
     ax.scatter(recall[i], precision[i], color="red", zorder=3, label=f"Threshold {threshold:.2f}")
     ax.set(xlabel="Recall", ylabel="Precision", title=title, xlim=(0, 1.01), ylim=(0, 1.01))
     ax.legend(loc="lower left")
