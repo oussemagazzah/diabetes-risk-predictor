@@ -25,4 +25,3 @@ Diabetes-Predictor/
 ├── diabetes_predictor.py   # Python script containing the code
 ├── requirements.txt        # List of required Python packages
 └── README.md               # This README file
-This `README.md` provides an overview of the project, describes the data, lists dependencies, and explains how to use the code. You can adjust the structure or content as needed for your project.
