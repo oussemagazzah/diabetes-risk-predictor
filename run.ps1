@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $py = if (Test-Path ".venv\Scripts\python.exe") { ".venv\Scripts\python.exe" } else { "python" }
 
 switch ($Task) {
-    "install"  { & $py -m pip install -r requirements.txt; & $py -m pip install -e . }
+    "install"  { & $py -m pip install -r requirements.txt }
     "train"    { & $py -m diabetes_predictor.train }
     "evaluate" { & $py -m diabetes_predictor.evaluate; & $py -m diabetes_predictor.explain }
     "all"      { & $py -m diabetes_predictor.train; & $py -m diabetes_predictor.evaluate; & $py -m diabetes_predictor.explain }

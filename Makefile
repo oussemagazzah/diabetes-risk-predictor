@@ -4,7 +4,6 @@ PY ?= python
 
 install:
 	$(PY) -m pip install -r requirements.txt
-	$(PY) -m pip install -e .
 
 train:
 	$(PY) -m diabetes_predictor.train
